@@ -12,6 +12,5 @@ public class SemesterDto
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
 
-    // Tự sinh: SE001...
     public string? Code { get; set; }
 }

@@ -30,7 +30,6 @@ public class TeacherService(AppDbContext db, IMapper mapper, IUserService users)
         return (await GetByIdAsync(teacher.Id))!;
     }
 
-    // Bản Java tạo User mới mỗi lần sửa và không lưu Teacher; ở đây sửa đúng User hiện có
     public async Task<TeacherDto?> UpdateAsync(long id, TeacherDto dto)
     {
         var teacher = await Set.Include(t => t.User).FirstOrDefaultAsync(t => t.Id == id);
@@ -45,7 +44,6 @@ public class TeacherService(AppDbContext db, IMapper mapper, IUserService users)
         return await GetByIdAsync(id);
     }
 
-    // Xoá User => Teacher bị xoá theo. Giáo viên đang có lớp / đề thi / chủ đề sẽ bị chặn (409)
     public async Task<bool> DeleteAsync(long id) =>
         await Db.Users.Where(u => u.Teacher != null && u.Teacher.Id == id).ExecuteDeleteAsync() > 0;
 

@@ -6,7 +6,6 @@ namespace TestManager.Api.Common.Mappings;
 
 public class ManagerMapping : Profile
 {
-    // Cần Include User
     public ManagerMapping()
     {
         CreateMap<Manager, ManagerDto>();

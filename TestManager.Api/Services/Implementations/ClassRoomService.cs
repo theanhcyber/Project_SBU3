@@ -55,7 +55,6 @@ public class ClassRoomService(AppDbContext db, IMapper mapper) : BaseService<Cla
         classRoom.TeacherId = dto.TeacherId;
     }
 
-    // Logic từ ClassRoomServiceImp.saveCLassRoom
     private async Task ValidateAsync(ClassRoomDto dto)
     {
         if (!await Db.Subjects.AnyAsync(s => s.Id == dto.SubjectId))

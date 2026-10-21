@@ -4,7 +4,6 @@ using TestManager.Api.Services;
 
 namespace TestManager.Api.Controllers;
 
-// Tài khoản được tạo / sửa / xoá thông qua Managers, Teachers, Students
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController(IUserService users) : ControllerBase

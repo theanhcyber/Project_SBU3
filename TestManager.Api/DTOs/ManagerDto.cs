@@ -12,7 +12,6 @@ public class ManagerDto
     [Required, StringLength(20)]
     public string Code { get; set; } = string.Empty;
 
-    // Bỏ trống khi tạo => true
     public bool? Status { get; set; }
 
     public long? UserId { get; set; }

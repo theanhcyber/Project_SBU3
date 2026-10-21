@@ -19,7 +19,6 @@ public class QuestionService(AppDbContext db, IMapper mapper) : BaseService<Ques
 
     public Task<QuestionDto?> GetByIdAsync(long id) => GetDtoByIdAsync(id);
 
-    // Bản Java gán isCorrect = true cho mọi đáp án; ở đây lấy đúng giá trị client gửi lên
     public async Task<QuestionDto> CreateAsync(QuestionDto dto)
     {
         ValidateAnswers(dto.Answers.Select(a => a.IsCorrect == true));
@@ -38,7 +37,6 @@ public class QuestionService(AppDbContext db, IMapper mapper) : BaseService<Ques
         return (await GetByIdAsync(question.Id))!;
     }
 
-    // Giữ nguyên Id của đáp án cũ (bài làm của sinh viên lưu theo answerId)
     public async Task<QuestionDto?> UpdateAsync(long id, QuestionDto dto)
     {
         var question = await Set.Include(q => q.Answers).FirstOrDefaultAsync(q => q.Id == id);
@@ -77,16 +75,8 @@ public class QuestionService(AppDbContext db, IMapper mapper) : BaseService<Ques
         return await GetByIdAsync(id);
     }
 
-    // Câu hỏi đang nằm trong đề thi sẽ bị chặn (409); đáp án bị xoá theo
     public Task<bool> DeleteAsync(long id) => DeleteByIdAsync(id);
 
-    /*
-     * Import câu hỏi từ Excel (logic từ TeacherServiceImp.addQuestionByExcelFile, bản Java chưa chạy được).
-     * Dòng 1 là tiêu đề. Các cột:
-     *   A: Mã môn | B: Mã chủ đề | C: Câu hỏi | D: Độ khó | E: Đáp án | F: Đúng ("x")
-     * Dòng có cột C trống (hoặc ô merge) là đáp án tiếp theo của câu hỏi phía trên.
-     * Toàn bộ file hợp lệ mới lưu, chỉ cần một dòng lỗi là không lưu gì.
-     */
     public async Task<List<QuestionDto>> ImportExcelAsync(Stream excel)
     {
         XLWorkbook workbook;

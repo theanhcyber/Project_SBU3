@@ -9,7 +9,6 @@ public class QuestionDto
     [Range(1, long.MaxValue)]
     public long TopicId { get; set; }
 
-    // Chỉ có khi trả về
     public string? TopicCode { get; set; }
 
     [Required, StringLength(1000)]
@@ -18,7 +17,6 @@ public class QuestionDto
     [Range(1, 5)]
     public int? Difficulty { get; set; }
 
-    // Ít nhất 2 đáp án, 1 đáp án đúng
     [MinLength(2)]
     public List<AnswerDto> Answers { get; set; } = [];
 }

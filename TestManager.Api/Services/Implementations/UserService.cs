@@ -15,8 +15,6 @@ public class UserService(AppDbContext db, IMapper mapper, IPasswordHasher<User> 
 
     public Task<UserDto?> GetByIdAsync(long id) => GetDtoByIdAsync(id);
 
-    // Gửi lên: currentPassword + password (mật khẩu mới).
-    // Bản Java chỉ nhận mật khẩu mới; ở đây bắt buộc nhập đúng mật khẩu hiện tại
     public async Task<bool> ChangePasswordAsync(long id, UserDto dto)
     {
         var user = await Set.FindAsync(id);
@@ -49,12 +47,10 @@ public class UserService(AppDbContext db, IMapper mapper, IPasswordHasher<User> 
             LastName = dto.LastName!,
             Status = true
         };
-        // Bản Java lưu mật khẩu dạng plain text; ở đây lưu hash
         user.PasswordHash = passwordHasher.HashPassword(user, dto.Password);
         return user;
     }
 
-    // Không đổi mật khẩu ở đây (dùng PUT /api/users/{id}/password)
     public async Task UpdateProfileAsync(User user, UserDto dto)
     {
         ValidateProfile(dto);
@@ -67,7 +63,6 @@ public class UserService(AppDbContext db, IMapper mapper, IPasswordHasher<User> 
         user.LastName = dto.LastName!;
     }
 
-    // UserDto dùng chung cho cả đổi mật khẩu nên các trường bắt buộc được kiểm tra ở đây thay vì [Required]
     private static void ValidateProfile(UserDto dto)
     {
         var missing = new (string Name, string? Value)[]

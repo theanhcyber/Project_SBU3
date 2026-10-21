@@ -9,7 +9,6 @@ namespace TestManager.Api.Services;
 
 public class StudentExamService(AppDbContext db, IMapper mapper) : BaseService<StudentExam, StudentExamDto>(db, mapper), IStudentExamService
 {
-    // Tương ứng StudentExamServiceImp.GetUnTakenExamImp (lọc theo sinh viên + đã thi / chưa thi)
     public async Task<List<StudentExamDto>> GetAllAsync(long? studentId = null, long? examId = null, bool? isTaken = null)
     {
         var query = Set.AsQueryable();
@@ -31,7 +30,6 @@ public class StudentExamService(AppDbContext db, IMapper mapper) : BaseService<S
         return (await GetByIdAsync(studentExam.Id))!;
     }
 
-    // Tương ứng savelistStudentExam: đăng ký nhiều bài thi, lỗi một bài thì huỷ tất cả
     public async Task<List<StudentExamDto>> RegisterManyAsync(List<StudentExamDto> dtos)
     {
         await using var transaction = await Db.Database.BeginTransactionAsync();
@@ -45,7 +43,6 @@ public class StudentExamService(AppDbContext db, IMapper mapper) : BaseService<S
         return result;
     }
 
-    // Đổi sang bài thi khác (chỉ khi chưa làm bài)
     public async Task<StudentExamDto?> UpdateAsync(long id, StudentExamDto dto)
     {
         var studentExam = await Set.FindAsync(id);
@@ -62,7 +59,6 @@ public class StudentExamService(AppDbContext db, IMapper mapper) : BaseService<S
 
     public Task<bool> DeleteAsync(long id) => DeleteByIdAsync(id);
 
-    // Tương ứng StudentServiceImp.saveStudentAnswer. Bài làm lưu dạng "qId:aId:aId|qId:aId"
     public async Task<StudentExamDto?> SubmitAsync(long id, StudentAnswerDto dto)
     {
         var studentExam = await Db.StudentExams
@@ -100,11 +96,6 @@ public class StudentExamService(AppDbContext db, IMapper mapper) : BaseService<S
         return await GetByIdAsync(id);
     }
 
-    /*
-     * Chấm điểm, logic từ TeacherServiceImp.mark + studentMark:
-     *   mark = totalScore / (tổng số đáp án đúng của cả đề) * (số đáp án đúng sinh viên chọn được)
-     * Với mỗi câu: chỉ tính điểm nếu số đáp án sinh viên chọn >= số đáp án đúng của câu đó.
-     */
     public async Task<StudentExamDto?> MarkAsync(long id)
     {
         var studentExam = await Db.StudentExams
@@ -139,7 +130,6 @@ public class StudentExamService(AppDbContext db, IMapper mapper) : BaseService<S
         return await GetByIdAsync(id);
     }
 
-    // Logic từ StudentExamServiceImp.saveStudentExam: không đăng ký trùng bài thi hoặc trùng giờ thi
     private async Task ValidateRegistrationAsync(StudentExamDto dto, long? excludeId)
     {
         if (!await Db.Students.AnyAsync(s => s.Id == dto.StudentId))

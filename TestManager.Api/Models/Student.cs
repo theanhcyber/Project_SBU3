@@ -4,7 +4,7 @@ public class Student : IEntity
 {
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string StudentCode { get; set; } = string.Empty; // computed column: ST001
+    public string StudentCode { get; set; } = string.Empty;
     public bool Status { get; set; }
 
     public long UserId { get; set; }

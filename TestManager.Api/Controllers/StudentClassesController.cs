@@ -4,7 +4,6 @@ using TestManager.Api.Services;
 
 namespace TestManager.Api.Controllers;
 
-// Sinh viên đăng ký lớp (thay cho POST /save-studentClass bản Java)
 [ApiController]
 [Route("api/student-classes")]
 public class StudentClassesController(IStudentClassService studentClasses) : ControllerBase

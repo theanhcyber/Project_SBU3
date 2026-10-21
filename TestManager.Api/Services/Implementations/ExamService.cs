@@ -41,10 +41,8 @@ public class ExamService(AppDbContext db, IMapper mapper) : BaseService<Exam, Ex
         return await GetByIdAsync(id);
     }
 
-    // Đề đã có sinh viên đăng ký sẽ bị chặn (409); câu hỏi trong đề bị gỡ theo
     public Task<bool> DeleteAsync(long id) => DeleteByIdAsync(id);
 
-    // Tương ứng ExamQuestionServiceImp.GetExam: lấy đề kèm danh sách câu hỏi
     public async Task<ExamDto?> GetPaperAsync(long id)
     {
         var exam = await Db.Exams
@@ -55,13 +53,11 @@ public class ExamService(AppDbContext db, IMapper mapper) : BaseService<Exam, Ex
 
         var paper = Mapper.Map<ExamDto>(exam);
         paper.Questions = Mapper.Map<List<QuestionDto>>(exam.ExamQuestions.OrderBy(eq => eq.Id).Select(eq => eq.Question));
-        // Ẩn đáp án đúng khi phát đề cho sinh viên
         foreach (var answer in paper.Questions.SelectMany(q => q.Answers))
             answer.IsCorrect = null;
         return paper;
     }
 
-    // Tương ứng ExamQuestionServiceImp.saveExamQuestion: thêm 1 câu hỏi vào đề
     public async Task<ExamDto?> AddQuestionAsync(long id, ExamQuestionDto dto)
     {
         var exam = await Set.FindAsync(id);
@@ -95,7 +91,6 @@ public class ExamService(AppDbContext db, IMapper mapper) : BaseService<Exam, Ex
         exam.TeacherId = dto.TeacherId;
     }
 
-    // Logic từ ExamServiceImp.saveExam
     private async Task ValidateAsync(ExamDto dto)
     {
         if (!await Db.Subjects.AnyAsync(s => s.Id == dto.SubjectId))

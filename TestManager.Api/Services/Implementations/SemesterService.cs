@@ -37,10 +37,8 @@ public class SemesterService(AppDbContext db, IMapper mapper) : BaseService<Seme
         return Mapper.Map<SemesterDto>(semester);
     }
 
-    // Học kỳ đang có lớp sẽ bị chặn (409)
     public Task<bool> DeleteAsync(long id) => DeleteByIdAsync(id);
 
-    // Logic từ SemesterServiceImp.saveSemester
     private async Task ValidateAsync(SemesterDto dto, long? excludeId)
     {
         if (dto.StartTime >= dto.EndTime)
@@ -48,7 +46,6 @@ public class SemesterService(AppDbContext db, IMapper mapper) : BaseService<Seme
         if (dto.EndTime < DateTime.Now)
             throw new AppException("Ngày kết thúc phải là hiện tại hoặc tương lai.");
 
-        // Không được trùng (kể cả chạm mốc) với học kỳ khác
         var overlapped = await Db.Semesters
             .Where(s => s.Id != excludeId && dto.StartTime <= s.EndTime && dto.EndTime >= s.StartTime)
             .Select(s => s.Name)

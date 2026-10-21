@@ -4,10 +4,8 @@ using TestManager.Api.Models;
 
 namespace TestManager.Api.Common.Mappings;
 
-// Thay cho StudentClassMapper bên Java
 public class StudentClassMapping : Profile
 {
-    // Cần Include ClassRoom, Student. StudentName được tự flatten từ Student.Name
     public StudentClassMapping()
     {
         CreateMap<StudentClass, StudentClassDto>()

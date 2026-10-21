@@ -15,7 +15,6 @@ public class TopicDto
     [Range(1, long.MaxValue)]
     public long TeacherId { get; set; }
 
-    // Các trường dưới chỉ có khi trả về
     public string? Code { get; set; }
     public string? SubjectName { get; set; }
     public string? TeacherName { get; set; }

@@ -1,27 +1,18 @@
-# Những file KHÔNG gửi vào build context (không copy vào image)
-
-# --- Bắt buộc theo đề ---
-# Kết quả build trên máy Windows: nặng, sai hệ điều hành, làm hỏng cache
 **/bin/
 **/obj/
-# Lịch sử git: nặng, không cần để chạy app
 .git
-# Biến môi trường / mật khẩu: không bao giờ được nằm trong image
 .env
 **/.env
 
-# --- Thêm cho gọn context ---
 .gitignore
 .vs/
 .vscode/
 *.user
 *.suo
-# Không cần để chạy API
 docs/
 postman/
 database/
 **/*.http
-# Bản thân file Docker
 Dockerfile
 Dockerfile.linux
 .dockerignore

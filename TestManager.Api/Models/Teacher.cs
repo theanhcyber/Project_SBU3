@@ -4,7 +4,7 @@ public class Teacher : IEntity
 {
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string TeacherCode { get; set; } = string.Empty; // computed column: TC001
+    public string TeacherCode { get; set; } = string.Empty;
     public bool Status { get; set; }
 
     public long? SubjectId { get; set; }

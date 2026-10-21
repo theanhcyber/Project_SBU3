@@ -10,7 +10,6 @@ public interface IExamService
     Task<ExamDto?> UpdateAsync(long id, ExamDto dto);
     Task<bool> DeleteAsync(long id);
 
-    // Câu hỏi trong đề (ExamQuestion)
     Task<ExamDto?> GetPaperAsync(long id);
     Task<ExamDto?> AddQuestionAsync(long id, ExamQuestionDto dto);
     Task<bool> RemoveQuestionAsync(long id, long questionId);

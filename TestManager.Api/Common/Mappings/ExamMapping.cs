@@ -4,11 +4,8 @@ using TestManager.Api.Models;
 
 namespace TestManager.Api.Common.Mappings;
 
-// Thay cho Exammaper bên Java
 public class ExamMapping : Profile
 {
-    // Cần Include Subject, Teacher, ExamQuestions. TeacherName được tự flatten từ Teacher.Name.
-    // Questions chỉ điền khi xem đề (ExamService.GetPaperAsync)
     public ExamMapping()
     {
         CreateMap<Exam, ExamDto>()

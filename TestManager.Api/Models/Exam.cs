@@ -7,7 +7,7 @@ public class Exam : IEntity
     public float TotalScore { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
-    public string Code { get; set; } = string.Empty; // computed column: EX001
+    public string Code { get; set; } = string.Empty;
 
     public long SubjectId { get; set; }
     public Subject Subject { get; set; } = null!;

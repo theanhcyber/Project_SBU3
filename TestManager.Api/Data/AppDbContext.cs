@@ -3,7 +3,6 @@ using TestManager.Api.Models;
 
 namespace TestManager.Api.Data;
 
-// Mapping khớp với schema trong database/init.sql
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
@@ -21,7 +20,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ExamQuestion> ExamQuestions => Set<ExamQuestion>();
     public DbSet<StudentExam> StudentExams => Set<StudentExam>();
 
-    // Mã tự sinh dạng PREFIX + 3 chữ số (thay cho @PostPersist bên Java)
     private static string CodeSql(string prefix) =>
         $"CONCAT(N'{prefix}', CASE WHEN Id < 1000 THEN RIGHT(CONCAT(N'00', Id), 3) ELSE CAST(Id AS NVARCHAR(20)) END)";
 

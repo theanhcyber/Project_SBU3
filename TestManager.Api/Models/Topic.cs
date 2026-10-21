@@ -4,7 +4,7 @@ public class Topic : IEntity
 {
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string Code { get; set; } = string.Empty; // computed column: TP001
+    public string Code { get; set; } = string.Empty;
 
     public long SubjectId { get; set; }
     public Subject Subject { get; set; } = null!;

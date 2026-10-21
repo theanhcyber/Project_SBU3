@@ -38,7 +38,6 @@ public class StudentService(AppDbContext db, IMapper mapper, IUserService users)
         return Mapper.Map<StudentDto>(student);
     }
 
-    // Xoá User => Student, các lớp đã đăng ký và bài thi của sinh viên bị xoá theo
     public async Task<bool> DeleteAsync(long id) =>
         await Db.Users.Where(u => u.Student != null && u.Student.Id == id).ExecuteDeleteAsync() > 0;
 }

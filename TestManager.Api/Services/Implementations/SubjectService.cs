@@ -36,7 +36,6 @@ public class SubjectService(AppDbContext db, IMapper mapper) : BaseService<Subje
         return Mapper.Map<SubjectDto>(subject);
     }
 
-    // Môn học đang có lớp / chủ đề / đề thi / giáo viên sẽ bị chặn (409)
     public Task<bool> DeleteAsync(long id) => DeleteByIdAsync(id);
 
     private async Task EnsureCodeAvailableAsync(string code, long? excludeId)

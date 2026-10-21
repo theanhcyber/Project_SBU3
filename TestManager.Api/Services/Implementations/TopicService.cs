@@ -41,7 +41,6 @@ public class TopicService(AppDbContext db, IMapper mapper) : BaseService<Topic, 
         return await GetByIdAsync(id);
     }
 
-    // Chủ đề đang có câu hỏi sẽ bị chặn (409)
     public Task<bool> DeleteAsync(long id) => DeleteByIdAsync(id);
 
     private async Task ValidateAsync(TopicDto dto)

@@ -44,7 +44,6 @@ public class ManagerService(AppDbContext db, IMapper mapper, IUserService users)
         return Mapper.Map<ManagerDto>(manager);
     }
 
-    // Tương ứng ManagerServiceImp.changeStatus: đảo trạng thái active / inactive
     public async Task<ManagerDto?> ToggleStatusAsync(long id)
     {
         var manager = await Set.Include(m => m.User).FirstOrDefaultAsync(m => m.Id == id);
@@ -55,7 +54,6 @@ public class ManagerService(AppDbContext db, IMapper mapper, IUserService users)
         return Mapper.Map<ManagerDto>(manager);
     }
 
-    // Xoá User => Manager bị xoá theo (ON DELETE CASCADE)
     public async Task<bool> DeleteAsync(long id) =>
         await Db.Users.Where(u => u.Manager != null && u.Manager.Id == id).ExecuteDeleteAsync() > 0;
 

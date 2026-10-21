@@ -9,10 +9,8 @@ public class StudentDto
     [Required, StringLength(150)]
     public string Name { get; set; } = string.Empty;
 
-    // Tự sinh: ST001...
     public string? StudentCode { get; set; }
 
-    // Bỏ trống khi tạo => true
     public bool? Status { get; set; }
 
     public long? UserId { get; set; }

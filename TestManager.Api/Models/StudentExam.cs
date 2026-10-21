@@ -6,7 +6,6 @@ public class StudentExam : IEntity
     public float? Mark { get; set; }
     public bool IsTaken { get; set; }
 
-    // Bài làm: "questionId:answerId:answerId|questionId:answerId" (giữ format như bản Java)
     public string? Answer { get; set; }
 
     public long ExamId { get; set; }

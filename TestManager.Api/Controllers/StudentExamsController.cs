@@ -4,7 +4,6 @@ using TestManager.Api.Services;
 
 namespace TestManager.Api.Controllers;
 
-// Sinh viên đăng ký thi, nộp bài, giáo viên chấm điểm
 [ApiController]
 [Route("api/student-exams")]
 public class StudentExamsController(IStudentExamService studentExams) : ControllerBase

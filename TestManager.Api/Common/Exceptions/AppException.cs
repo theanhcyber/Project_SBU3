@@ -1,7 +1,5 @@
 namespace TestManager.Api.Common.Exceptions;
 
-// Lỗi nghiệp vụ, được AppExceptionHandler chuyển thành ProblemDetails với StatusCode tương ứng.
-// Thay cho các chỗ System.out.println(...) / orElseThrow() bên bản Java.
 public class AppException(string message, int statusCode = StatusCodes.Status400BadRequest) : Exception(message)
 {
     public int StatusCode { get; } = statusCode;

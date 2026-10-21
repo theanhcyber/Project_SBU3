@@ -21,12 +21,10 @@ public class ExamDto
     [Range(1, long.MaxValue)]
     public long TeacherId { get; set; }
 
-    // Các trường dưới chỉ có khi trả về
     public string? Code { get; set; }
     public string? SubjectName { get; set; }
     public string? TeacherName { get; set; }
     public int? QuestionCount { get; set; }
 
-    // Chỉ có khi xem đề (GET /api/exams/{id}/questions), đáp án đúng bị ẩn
     public List<QuestionDto>? Questions { get; set; }
 }

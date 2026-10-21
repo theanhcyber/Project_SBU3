@@ -9,10 +9,8 @@ public class TeacherDto
     [Required, StringLength(150)]
     public string Name { get; set; } = string.Empty;
 
-    // Tự sinh: TC001...
     public string? TeacherCode { get; set; }
 
-    // Bỏ trống khi tạo => true
     public bool? Status { get; set; }
 
     public long? SubjectId { get; set; }
