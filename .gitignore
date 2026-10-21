@@ -378,3 +378,5 @@ FodyWeavers.xsd
 
 obj/
 bin/
+# Docker Compose secrets
+.env

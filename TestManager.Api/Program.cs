@@ -12,7 +12,10 @@ using TestManager.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>("database");
 
 builder.Services.AddMappings(builder.Configuration);
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -51,6 +54,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 

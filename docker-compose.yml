@@ -1,0 +1,56 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Thiếu MSSQL_SA_PASSWORD trong .env (copy từ .env.example)}
+    ports:
+      - "14333:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -b -Q \"SELECT 1\" -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    volumes:
+      - ./database:/scripts:ro
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        S="/opt/mssql-tools18/bin/sqlcmd -S db -U sa -P $$MSSQL_SA_PASSWORD -C -b"
+        if [ "$$($$S -h -1 -W -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.databases WHERE name='TestManagerDb'")" = "0" ]; then
+          echo "Khoi tao TestManagerDb tu init.sql..."
+          $$S -f 65001 -i /scripts/init.sql
+        else
+          echo "TestManagerDb da ton tai, bo qua init.sql."
+        fi
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.linux
+    image: teamboard-api:linux
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    environment:
+      ConnectionStrings__Default: "Server=db,1433;Database=TestManagerDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;Connect Timeout=5"
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "8080:8080"
+
+volumes:
+  mssql-data:
