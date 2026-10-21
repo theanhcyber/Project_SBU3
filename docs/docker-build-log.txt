@@ -1,0 +1,63 @@
+# Docker build log - TestManager API (Windows containers, Docker Desktop 28.1.1, Windows 11 Pro 26200)
+# Ngày: 2026-10-21
+
+## 1. Kích thước image (docker images)
+REPOSITORY:TAG                                                                        SIZE
+teamboard-api:latest                                                                  443MB
+mcr.microsoft.com/dotnet/sdk:9.0-nanoserver-ltsc2022                                  1.28GB
+mcr.microsoft.com/dotnet/aspnet:9.0-nanoserver-ltsc2022                               413MB
+
+## 2. Các layer của teamboard-api (docker history)
+CREATED BY                                       SIZE
+cmd /S /C #(nop)  ENTRYPOINT ["dotnet" "Test…   41kB
+cmd /S /C #(nop)  EXPOSE 8080                    41kB
+cmd /S /C #(nop)  ENV ASPNETCORE_HTTP_PORTS=…   41kB
+cmd /S /C #(nop) COPY dir:1b33c75a75b0b8afbe…   29.8MB
+cmd /S /C #(nop) WORKDIR C:\app                  41kB
+cmd /S /C #(nop) COPY dir:de9ce25fead7afb5c4…   29.1MB
+cmd /S /C #(nop)  ENV ASPNET_VERSION=9.0.21      41kB
+
+## 3. Build lần 1 (phần stage runtime, cuối log) - mất ~8 phút do tải image lần đầu
+Step 9/13 : WORKDIR /app
+ ---> Running in a0612d975ab1
+ ---> Removed intermediate container a0612d975ab1
+ ---> a9443bf28982
+Step 10/13 : COPY --from=build /app/publish .
+ ---> c4edf54448af
+Step 11/13 : ENV ASPNETCORE_HTTP_PORTS=8080
+ ---> Running in 91150daef176
+ ---> Removed intermediate container 91150daef176
+ ---> ec6cbeb47366
+Step 12/13 : EXPOSE 8080
+ ---> Running in 099b73b0f75b
+ ---> Removed intermediate container 099b73b0f75b
+ ---> 7bb4d5f1dfc0
+Step 13/13 : ENTRYPOINT ["dotnet", "TestManager.Api.dll"]
+ ---> Running in de4a75c3622f
+ ---> Removed intermediate container de4a75c3622f
+ ---> 935960401892
+Successfully built 935960401892
+Successfully tagged teamboard-api:latest
+
+## 4. Build lần 2 sau khi sửa TestManager.Api/Program.cs - mất ~40 giây
+##    Bước 5 (dotnet restore) => Using cache
+Step 1/13 : FROM mcr.microsoft.com/dotnet/sdk:9.0-nanoserver-ltsc2022 AS build
+Step 2/13 : WORKDIR /src
+ ---> Using cache
+Step 3/13 : COPY global.json ./
+ ---> Using cache
+Step 4/13 : COPY TestManager.Api/TestManager.Api.csproj TestManager.Api/
+ ---> Using cache
+Step 5/13 : RUN dotnet restore TestManager.Api/TestManager.Api.csproj
+ ---> Using cache
+Step 6/13 : COPY . .
+Step 7/13 : RUN dotnet publish TestManager.Api/TestManager.Api.csproj -c Release -o /app/publish --no-restore -p:UseAppHost=false
+Step 8/13 : FROM mcr.microsoft.com/dotnet/aspnet:9.0-nanoserver-ltsc2022 AS runtime
+Step 9/13 : WORKDIR /app
+ ---> Using cache
+Step 10/13 : COPY --from=build /app/publish .
+Step 11/13 : ENV ASPNETCORE_HTTP_PORTS=8080
+Step 12/13 : EXPOSE 8080
+Step 13/13 : ENTRYPOINT ["dotnet", "TestManager.Api.dll"]
+Successfully built 09b00f4d3fc9
+Successfully tagged teamboard-api:latest
