@@ -12,7 +12,8 @@ using TestManager.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"),
+        sql => sql.EnableRetryOnFailure()));
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<AppDbContext>("database");
@@ -47,6 +48,16 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 app.Services.GetRequiredService<IMapper>().ConfigurationProvider.AssertConfigurationIsValid();
+
+// Chỉ tự migrate + seed ở Development. Production chạy migration thành bước riêng trong pipeline.
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    app.Logger.LogInformation("Applying EF Core migrations...");
+    await db.Database.MigrateAsync();
+    await DbSeeder.SeedAsync(db, scope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>(), app.Logger);
+}
 
 app.UseExceptionHandler();
 

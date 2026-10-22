@@ -30,18 +30,21 @@ public class StudentExamService(AppDbContext db, IMapper mapper) : BaseService<S
         return (await GetByIdAsync(studentExam.Id))!;
     }
 
-    public async Task<List<StudentExamDto>> RegisterManyAsync(List<StudentExamDto> dtos)
-    {
-        await using var transaction = await Db.Database.BeginTransactionAsync();
-        var result = new List<StudentExamDto>();
-        for (var i = 0; i < dtos.Count; i++)
+    // EnableRetryOnFailure không cho tự mở transaction ngoài execution strategy: retry phải chạy lại cả khối
+    public Task<List<StudentExamDto>> RegisterManyAsync(List<StudentExamDto> dtos) =>
+        Db.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
         {
-            try { result.Add(await RegisterAsync(dtos[i])); }
-            catch (AppException e) { throw new AppException($"Phần tử thứ {i + 1}: {e.Message}", e.StatusCode); }
-        }
-        await transaction.CommitAsync();
-        return result;
-    }
+            Db.ChangeTracker.Clear();
+            await using var transaction = await Db.Database.BeginTransactionAsync();
+            var result = new List<StudentExamDto>();
+            for (var i = 0; i < dtos.Count; i++)
+            {
+                try { result.Add(await RegisterAsync(dtos[i])); }
+                catch (AppException e) { throw new AppException($"Phần tử thứ {i + 1}: {e.Message}", e.StatusCode); }
+            }
+            await transaction.CommitAsync();
+            return result;
+        });
 
     public async Task<StudentExamDto?> UpdateAsync(long id, StudentExamDto dto)
     {
