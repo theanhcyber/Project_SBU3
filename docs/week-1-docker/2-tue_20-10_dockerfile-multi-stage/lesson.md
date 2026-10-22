@@ -34,14 +34,14 @@ docker run --rm hello-world
 
 ### 0b. Dùng Windows containers (máy chưa có WSL2)
 
-Nếu Docker Desktop đang ở chế độ **Windows containers** (`docker version` báo Server `windows/amd64`), hãy dùng file [`Dockerfile.windows`](../Dockerfile.windows). File này giống `Dockerfile`, chỉ khác image nền và một vài dòng:
+Nếu Docker Desktop đang ở chế độ **Windows containers** (`docker version` báo Server `windows/amd64`), hãy dùng file [`Dockerfile`](../../../Dockerfile) (bản Windows). File này giống `Dockerfile.linux`, chỉ khác image nền và một vài dòng:
 
-| | `Dockerfile` (Linux) | `Dockerfile.windows` (Windows) |
+| | `Dockerfile.linux` (Linux) | `Dockerfile` (Windows) |
 |---|---|---|
 | Image build | `dotnet/sdk:9.0` | `dotnet/sdk:9.0-nanoserver-ltsc2022` |
 | Image runtime | `dotnet/aspnet:9.0` | `dotnet/aspnet:9.0-nanoserver-ltsc2022` |
 | User chạy app | `USER $APP_UID` | Không cần, image mặc định đã chạy bằng `ContainerUser` |
-| Lệnh build | `docker build -t teamboard-api .` | `docker build -f Dockerfile.windows -t teamboard-api .` |
+| Lệnh build | `docker build -f Dockerfile.linux -t teamboard-api .` | `docker build -t teamboard-api .` |
 
 Lệnh `docker run`, cách kiểm tra cache và đo kích thước giữ nguyên.
 
@@ -68,9 +68,9 @@ Hạn chế của Windows containers:
 
 | Yêu cầu | Nằm ở đâu | Dùng để làm gì |
 |---|---|---|
-| Dockerfile 2 stage | [`Dockerfile`](../Dockerfile): `FROM … sdk:9.0 AS build` và `FROM … aspnet:9.0 AS runtime` | Stage 1 có đủ công cụ để **biên dịch**. Stage 2 chỉ có runtime để **chạy**. Image cuối chỉ là stage 2, nên nhỏ hơn |
+| Dockerfile 2 stage | [`Dockerfile.linux`](../../../Dockerfile.linux) / [`Dockerfile`](../../../Dockerfile) (Windows): `FROM … sdk:9.0 AS build` và `FROM … aspnet:9.0 AS runtime` | Stage 1 có đủ công cụ để **biên dịch**. Stage 2 chỉ có runtime để **chạy**. Image cuối chỉ là stage 2, nên nhỏ hơn |
 | Copy `.csproj` + `dotnet restore` trước | `Dockerfile`: phần ① | Tách bước tải package thành một layer riêng, chỉ chạy lại khi `.csproj` đổi |
-| `.dockerignore` | [`.dockerignore`](../.dockerignore) | Không gửi `bin/`, `obj/`, `.git`, `.env` vào build context. Context nhẹ hơn, không lẫn file build của Windows, không lộ bí mật |
+| `.dockerignore` | [`.dockerignore`](../../../.dockerignore) | Không gửi `bin/`, `obj/`, `.git`, `.env` vào build context. Context nhẹ hơn, không lẫn file build của Windows, không lộ bí mật |
 | Log kích thước image | Mục 6 của file này | Chứng minh image runtime nhỏ hơn image SDK |
 | Restore hiện CACHED | Mục 5.4 | Chứng minh layer cache hoạt động |
 
@@ -159,9 +159,9 @@ docker history teamboard-api      # xem từng layer và dung lượng
 2. Build lại và lưu log:
    ```powershell
    # Linux containers (BuildKit)
-   docker build --progress=plain -t teamboard-api . 2>&1 | Tee-Object build-cache.log
+   docker build --progress=plain -f Dockerfile.linux -t teamboard-api . 2>&1 | Tee-Object build-cache.log
    # Windows containers (builder cũ, không có --progress)
-   docker build -f Dockerfile.windows -t teamboard-api . 2>&1 | Tee-Object build-cache.log
+   docker build -t teamboard-api . 2>&1 | Tee-Object build-cache.log
    ```
 3. Tìm dòng `RUN dotnet restore` trong log:
    - Linux phải thấy **`CACHED`**.
@@ -173,7 +173,7 @@ docker history teamboard-api      # xem từng layer và dung lượng
 
 ## 6. Log nộp bài
 
-> Đo thật ngày 21/10/2026 trên Docker Desktop 28.1.1, chế độ **Windows containers** (`Dockerfile.windows`). Log đầy đủ: [`docker-build-log.txt`](docker-build-log.txt).
+> Đo thật ngày 21/10/2026 trên Docker Desktop 28.1.1, chế độ **Windows containers** (`Dockerfile`, bản Windows). Log đầy đủ: [`build-log.txt`](build-log.txt).
 
 | Image | Kích thước |
 |---|---|
@@ -192,7 +192,7 @@ docker history teamboard-api      # xem từng layer và dung lượng
 
 ### Tự đánh giá
 
-- [x] `docker build -f Dockerfile.windows -t teamboard-api .` thành công (`Successfully tagged teamboard-api:latest`)
+- [x] `docker build -t teamboard-api .` thành công (`Successfully tagged teamboard-api:latest`)
 - [x] `docker run -p 8080:8080 teamboard-api` khởi động được app:
   - Log báo `Now listening on: http://[::]:8080`.
   - `/swagger` trả 200.
@@ -215,7 +215,7 @@ docker history teamboard-api      # xem từng layer và dung lượng
 | `open //./pipe/dockerDesktopWindowsEngine` hoặc `cannot connect to the Docker daemon` | Docker Desktop chưa chạy, hoặc đang ở Windows containers | Làm lại mục 0 |
 | `no matching manifest for windows/amd64` | Đang ở Windows containers | Chuyển sang Linux containers |
 | `A compatible .NET SDK was not found` | `global.json` đòi SDK mà image không có | `global.json` dùng `rollForward: latestFeature` nên SDK 9.0 bất kỳ đều chạy được. Nếu vẫn lỗi, kiểm tra tag image `sdk:9.0` |
-| `unknown flag: --progress` | Windows containers dùng builder cũ, không phải BuildKit | Bỏ cờ `--progress=plain`, chạy `docker build -f Dockerfile.windows -t teamboard-api . 2>&1 \| Tee-Object build.log` |
+| `unknown flag: --progress` | Windows containers dùng builder cũ, không phải BuildKit | Bỏ cờ `--progress=plain`, chạy `docker build -t teamboard-api . 2>&1 \| Tee-Object build.log` |
 | `port is already allocated` | Cổng 8080 đang bị chiếm | Chạy với `-p 8081:8080`, hoặc `docker ps` rồi `docker stop <id>` |
 | Gọi API bị lỗi kết nối SQL | Trong container, `localhost` không phải máy host, và Windows Authentication không dùng được trong Linux container | Bình thường ở bài này. Bài sau: chạy SQL Server bằng container và đặt `ConnectionStrings__DefaultConnection` |
 | Log cảnh báo *AutoMapper license* | AutoMapper ≥ 15 cần license khi chạy production | Không ảnh hưởng. Có thể truyền key: `-e AutoMapper__LicenseKey=...` |

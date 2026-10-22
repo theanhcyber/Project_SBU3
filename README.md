@@ -33,5 +33,6 @@ Connection string `ConnectionStrings:Default` trong `appsettings.json`; ghi đè
 
 ## Tài liệu
 
-- [docs/docker-compose-spec.md](docs/docker-compose-spec.md) — spec Docker Compose
-- [docs/docker-lesson.md](docs/docker-lesson.md) — giáo án Dockerfile / image / container
+- [docs/README.md](docs/README.md) — lộ trình 6 tuần, mỗi tuần một thư mục, mỗi ngày một `spec.md`
+- Tuần 1 · 20/10 [Dockerfile multi-stage](docs/week-1-docker/2-tue_20-10_dockerfile-multi-stage/spec.md) — kèm `lesson.md`, `build-log.txt`
+- Tuần 1 · 21/10 [Cấu hình, health check, Compose](docs/week-1-docker/3-wed_21-10_config-health-check-compose/spec.md) — kèm `design.md`, `explained.md`
