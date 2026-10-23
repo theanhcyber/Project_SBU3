@@ -23,8 +23,9 @@ public class ClassesController(IClassRoomService classes, IStudentClassService s
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<StudentClassDto>>> GetStudents(long id)
     {
-        if (await classes.GetByIdAsync(id) is null) return NotFound();
-        return await studentClasses.GetAllAsync(classId: id);
+        var students = await studentClasses.GetByClassCachedAsync(id);
+        if (students.Count == 0 && await classes.GetByIdAsync(id) is null) return NotFound();
+        return students;
     }
 
     /// <summary>Tạo lớp. Thời gian lớp phải nằm trong học kỳ và chưa kết thúc.</summary>

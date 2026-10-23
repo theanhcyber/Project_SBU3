@@ -1,5 +1,7 @@
+using System.Text.Json;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using TestManager.Api.Common.Exceptions;
 using TestManager.Api.DTOs;
 using TestManager.Api.Data;
@@ -7,8 +9,26 @@ using TestManager.Api.Models;
 
 namespace TestManager.Api.Services;
 
-public class StudentClassService(AppDbContext db, IMapper mapper) : BaseService<StudentClass, StudentClassDto>(db, mapper), IStudentClassService
+public class StudentClassService(AppDbContext db, IMapper mapper, IDistributedCache cache)
+    : BaseService<StudentClass, StudentClassDto>(db, mapper), IStudentClassService
 {
+    private static readonly DistributedCacheEntryOptions StudentsCacheOptions =
+        new() { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60) };
+
+    private static string StudentsCacheKey(long classId) => $"class:{classId}:students";
+
+    public async Task<List<StudentClassDto>> GetByClassCachedAsync(long classId)
+    {
+        var key = StudentsCacheKey(classId);
+        var cached = await cache.GetStringAsync(key);
+        if (cached is not null)
+            return JsonSerializer.Deserialize<List<StudentClassDto>>(cached)!;
+
+        var students = await GetAllAsync(classId: classId);
+        await cache.SetStringAsync(key, JsonSerializer.Serialize(students), StudentsCacheOptions);
+        return students;
+    }
+
     public async Task<List<StudentClassDto>> GetAllAsync(long? classId = null, long? studentId = null)
     {
         var query = Set.AsQueryable();
