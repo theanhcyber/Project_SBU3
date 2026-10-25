@@ -41,11 +41,24 @@ _Không có._
 - [ ] Xem AWS Budgets: ngưỡng cảnh báo và người nhận.
 - [ ] Phân biệt region, Availability Zone, IaaS / PaaS / SaaS.
 
-**Câu hỏi cần chốt trước khi làm:** _(điền khi bắt đầu bài)_
+**Câu hỏi cần chốt trước khi làm** (hỏi team/mentor):
 
-**Áp dụng vào TestManager-AspNet:** _(ghi endpoint, file sẽ thêm hoặc sửa)_
+1. Sandbox cấp quyền theo cách nào: IAM user (sign-in URL + mật khẩu tạm) hay IAM Identity Center (access portal)? Câu trả lời quyết định cách bật MFA hôm nay và cách cấu hình CLI ngày 27/10.
+2. Team dùng region nào? SCP có chặn region khác không? Region đó có App Runner không (cần cho bài 31/10)?
+3. User của mình có quyền xem Billing/Budgets không? Nếu không, ai cung cấp thông tin ngưỡng và người nhận cảnh báo?
+4. Có quy ước tag bắt buộc (ví dụ `Owner`, `Project`) khi tạo tài nguyên không?
+
+**Áp dụng vào TestManager-AspNet:** bài này chưa sửa code. Phần liên quan là kế hoạch chuyển kiến trúc tuần 1 lên AWS:
+
+| Tuần 1 (Docker Compose) | Tuần 2 (AWS) | Loại dịch vụ |
+|---|---|---|
+| Container `db` (SQL Server) | RDS SQL Server (29/10) | Managed database (PaaS) |
+| Container `api` | App Runner (31/10), image lấy từ ECR (30/10) | PaaS |
+| `EnableRetryOnFailure()` trong `Program.cs` | Giúp app vượt qua lúc RDS Multi-AZ failover | |
 
 ## 7. Kiến thức cần học và tài liệu
+
+> Chi tiết khái niệm, nguồn học, phân bổ thời gian và checklist tự kiểm tra: [learning.md](learning.md).
 
 - [AWS global infrastructure](https://aws.amazon.com/about-aws/global-infrastructure/)
 - [IAM: MFA](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html)

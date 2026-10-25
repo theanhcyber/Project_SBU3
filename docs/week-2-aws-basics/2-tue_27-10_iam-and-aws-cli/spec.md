@@ -42,11 +42,20 @@ _Không có._
 - [ ] Cài AWS CLI v2, cấu hình profile `teamboard` theo cách sandbox cấp.
 - [ ] Tự viết policy chỉ cho đọc object trong một bucket S3 cụ thể.
 
-**Câu hỏi cần chốt trước khi làm:** _(điền khi bắt đầu bài)_
+**Hiện trạng:** máy chưa cài AWS CLI, chưa có thư mục `%USERPROFILE%\.aws`.
 
-**Áp dụng vào TestManager-AspNet:** _(ghi endpoint, file sẽ thêm hoặc sửa)_
+**Câu hỏi cần chốt trước khi làm:**
+
+1. Sandbox cấp credential cho CLI theo cách nào: access key của IAM user (`aws configure`) hay SSO (`aws configure sso`)? (đã hỏi ở bài 26/10)
+2. Policy của sandbox có ép MFA cho CLI không? Nếu có, cần dùng `aws sts get-session-token`.
+3. User có quyền tạo policy và bucket S3 không? Nếu không, chỉ kiểm tra policy bằng Access Analyzer và Policy Simulator.
+4. Đặt `iam-notes.md` ở `docs/` (đúng spec) hay trong thư mục bài này?
+
+**Áp dụng vào TestManager-AspNet:** chưa sửa code. Policy đọc S3 là bản nháp cho bài 04/11 (S3 và presigned URL). Cách nghĩ user và role là nền cho bài 03/11 (IAM role cho App Runner) và 11/11 (GitHub Actions dùng OIDC). Kiểm tra không có access key trong repo: `git grep -nE "AKIA|ASIA|aws_secret_access_key"`.
 
 ## 7. Kiến thức cần học và tài liệu
+
+> Chi tiết khái niệm, bài tập policy, nguồn học, phân bổ thời gian và checklist tự kiểm tra: [learning.md](learning.md).
 
 - [IAM policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html)
 - [Cài AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
